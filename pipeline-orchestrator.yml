@@ -1,0 +1,29 @@
+# Template example for the pipeline-orchestrator
+name: $(date:yyyy.MM.dd)$(rev:.r)-$(Build.SourceBranchName)
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - pipeline-orchestrator.yml
+      - pipeline-build.yml
+      - pipeline-release.yml
+
+# it is important to pick a specific version so that you have the possibility to run a version with the exact same version agent.
+pool:
+  vmImage: "ubuntu-20.04"
+  
+variables:
+
+  # Stage Pool
+  - name: Stage.Pool
+    value: "ubuntu-20.04"
+
+stages:
+  - stage: "Build"
+    jobs:
+      - job: Build
+        displayName: "Build"
+        steps:
+          - template: pipeline-build.yml
