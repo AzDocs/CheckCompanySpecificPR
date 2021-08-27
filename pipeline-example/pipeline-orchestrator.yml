@@ -1,0 +1,72 @@
+# Template example for the pipeline-orchestrator
+parameters:
+  - name: AzDocsBranchName
+    type: string
+    default: master
+
+name: $(date:yyyy.MM.dd)$(rev:.r)-$(Build.SourceBranchName)
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - pipeline-orchestrator.yml
+      - pipeline-build.yml
+      - pipeline-release-public.yml
+      - pipeline-release-including-vnet.yml
+
+# it is important to pick a specific version so that you have the possibility to run a version with the exact same version agent.
+pool:
+  vmImage: "ubuntu-20.04"
+
+variables:
+  # Basic
+  - name: TeamName
+    value: $(TeamNameToUse)
+  - name: ProjectName
+    value: $(ProjectNameToUse)
+
+  # Tags
+  - name: Tag.ApplicationId
+    value: $(ApplicationId)
+  - name: Tag.ApplicationName
+    value: $(ApplicationName)
+  - name: Tag.ApplicationOwner
+    value: $(ApplicationOwner)
+  - name: Tag.AppTechOwner
+    value: $(AppTechOwner)
+  - name: Tag.BillingIdentifier
+    value: $(BillingIdentifier)
+  - name: Tag.BusinessUnit
+    value: $(BusinessUnit)
+  - name: Tag.CostType
+    value: $(CostType)
+  - name: Tag.Tier
+    value: $(Tier)
+
+  # Stage Pool
+  - name: Stage.Pool
+    value: "ubuntu-20.04"
+
+stages:
+  - stage: "Build"
+    jobs:
+      - job: Build
+        displayName: "Build"
+        steps:
+          - template: pipeline-build.yml
+
+  - stage: "dev"
+    displayName: "Deploy to dev"
+    pool:
+      vmImage: $(Stage.Pool)
+    jobs:
+      - template: pipeline-release-public.yml
+        parameters:
+          SubscriptionName: "<your-subscription>"
+          EnvironmentName: dev
+          TeamName: $(TeamName)
+          ProjectName: $(ProjectName)
+          GatewayCertificate: "<gateway-certificate>"
+          AzDocsBranchName: ${{ parameters.AzDocsBranchName }}

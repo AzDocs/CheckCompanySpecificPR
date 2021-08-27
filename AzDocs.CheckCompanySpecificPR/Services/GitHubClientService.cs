@@ -114,7 +114,7 @@ namespace AzDocs.CheckCompanySpecificPR.Services
             var threads = await _client.GetThreadsAsync(pr.Resource.Repository.Project.Id, pr.Resource.Repository.Id, pr.Resource.PullRequestId);
             foreach (var thread in threads)
             {
-                if (thread.ThreadContext.RightFileEnd.Line == specificTermFound.LineNumber && thread.ThreadContext.RightFileEnd.Offset == specificTermFound.End &&
+                if (thread.ThreadContext != null && thread.ThreadContext.RightFileEnd.Line == specificTermFound.LineNumber && thread.ThreadContext.RightFileEnd.Offset == specificTermFound.End &&
                     thread.ThreadContext.RightFileStart.Line == specificTermFound.LineNumber && thread.ThreadContext.RightFileStart.Offset == specificTermFound.Start &&
                     thread.Comments.Any(x => x.Content.Equals(message)) &&
                     thread.ThreadContext.FilePath == specificTermFound.FilePath

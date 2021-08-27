@@ -45,27 +45,19 @@ jobs:
       - name: ResourceTags
         value: "@('BillingIdentifier=$(Tag.BillingIdentifier)'; 'EnvironmentType=${{ parameters.EnvironmentName }}';  'ApplicationName=$(Tag.ApplicationName)'; 'AppTechOwner=$(Tag.AppTechOwner)'; 'ApplicationOwner=$(Tag.ApplicationOwner)'; 'ApplicationID=$(Tag.ApplicationID)'; 'BusinessUnit=$(Tag.BusinessUnit)'; 'CostType=$(Tag.CostType)'; 'Tier=$(Tag.Tier)')"
 
-      # Vnet/Subnet
-      - name: ApplicationSubnetName
-        value: "app-subnet-5"
-      - name: ApplicationVnetName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-001-vnet"
-      - name: ApplicationVnetResourceGroupName
-        value: "sharedservices-rg"
-
       # Storage
       - name: StorageAccountName
-        value: "strgpr${{ parameters.EnvironmentName }}"
+        value: "<your-storage-account-name>"
 
       # Function app
       - name: AppServicePlanName
-        value: "${{ format('KPCShared-ASP-{0}-Linux-1', parameters.EnvironmentName) }}"
+        value: "<your-app-service-plan>"
       - name: AppServicePlanResourceGroupName
-        value: "${{ format('KPCShared-AppServicePlans-{0}-Linux', parameters.EnvironmentName) }}"
+        value: "<your-app-service-plan-resource-group-name>"
       - name: FunctionAppResourceGroupName
         value: "$(ResourceGroupName)"
       - name: FunctionAppName
-        value: "${{ format('{0}-fctapp-{1}', parameters.ProjectName, parameters.EnvironmentName) }}"
+        value: "${{ format('{0}-fctapp', parameters.ProjectName) }}"
       - name: FunctionAppStorageAccountName
         value: "$(StorageAccountName)"
       - name: AlwaysOn
@@ -78,14 +70,6 @@ jobs:
         value: "2"
       - name: FunctionAppDeploymentSlotName
         value: "staging"
-      - name: GatewayVnetResourceGroupName
-        value: "sharedservices-rg"
-      - name: GatewayVnetName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-001-vnet"
-      - name: GatewaySubnetName
-        value: "gateway2-subnet"
-      - name: GatewayWhitelistRulePriority
-        value: "20"
       - name: FunctionAppAlwaysOn
         value: $True
       - name: FunctionAppRunTime
@@ -103,72 +87,15 @@ jobs:
       - name: AppInsightsLocation
         value: "$(Location)"
 
-      # VNET Integration
-      - name: FunctionAppVnetIntegrationSubnetName
-        value: "app-subnet-5"
-      - name: FunctionAppVnetIntegrationVnetName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-001-vnet"
-
         #AppSettings
       - name: FunctionAppAppSettings
-        value: "@('PAT=$(PAT)';'Organization=$(Organization)';'CompanySpecificTerms__0=KPN';'CompanySpecificTerms__1=KSP';'CompanySpecificTerms__2=Curiosity';'AcceptedTerms__0=LogAnalyticsWorkspaceId';'AcceptedTerms__1=LogAnalyticsWorkspace';'AcceptedTerms__2=Workspace';'AcceptedTerms__3=loganalyticsworkspaceresourceid';'AcceptedTerms__4=loganalyticsworkspacename';'AcceptedTerms__5=workspaces')"
-
-        # Application gateway
-      - name: DomainName
-        ${{ if eq(parameters.EnvironmentName, 'prod') }}:
-          value: prchecker.personalcloud.kpn.com
-        ${{ if ne(parameters.EnvironmentName, 'prod') }}:
-          value: prchecker.${{ parameters.EnvironmentName }}.personalcloud.kpn.com
-      - name: GatewayName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-002-gtw"
-      - name: GatewayType
-        value: "Public"
-      - name: SharedServicesKeyvaultName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-shared-01-kv"
-      - name: BackendDomainName
-        value: $(FunctionAppName).azurewebsites.net
-      - name: HealthProbePath
-        value: "/api/HealthCheck"
-      - name: GatewayRuleType
-        value: "Basic"
-      - name: HealthProbeInterval
-        value: "60"
-      - name: HealthProbeThreshold
-        value: "2"
-      - name: HealthProbeTimeout
-        value: "20"
-      - name: HealthProbeProtocol
-        value: "HTTPS"
-      - name: HttpsSettingsProtocol
-        value: "HTTPS"
-      - name: HttpsSettingsPort
-        value: "443"
-      - name: HttpsSettingsCookieAffinity
-        value: "Disabled"
-      - name: HttpsSettingsConnectionDrainingTimeout
-        value: "0"
-      - name: HttpsSettingsTimeout
-        value: "30"
-      - name: MatchStatusCodes
-        value: "200-399"
-      - name: SharedServicesResourceGroupName
-        value: "sharedservices-rg"
+        value: "@('PAT=$(PAT)';'Organization=$(Organization)';'CompanySpecificTerms__0=ThisIsMyCompany';'CompanySpecificTerms__1=CompanyNameTest';'AcceptedTerms__0=Project';)"
 
       # Log Analytics Workspace
       - name: LogAnalyticsWorkspaceResourceGroupName
-        value: "kpcshared-monitoring-${{ parameters.EnvironmentName }}"
+        value: "<your-log-analytics-workspace-resource-group-name>"
       - name: LogAnalyticsWorkspaceName
-        value: "kpcshared-law-${{ parameters.EnvironmentName }}"
-
-      # Application Gateway WAF custom rule
-      - name: ApplicationGatewayWafName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-002-waf"
-      - name: ApplicationGatewayWafCustomRuleAction
-        value: "Allow"
-      - name: ApplicationGatewayWafCustomRuleRequestHeader
-        value: "prchecker"
-      - name: ApplicationGatewayWafCustomRuleRequestHeaderValue
-        value: "thisistheprchecker2021"
+        value: "<your-log-analytics-workspace-name>"
 
     strategy:
       runOnce:
@@ -178,11 +105,11 @@ jobs:
             - task: DownloadPipelineArtifact@2
               inputs:
                 buildType: specific
-                project: "36c74ac1-de12-4114-aa8a-995c9bea22ac"
-                definition: "853"
+                project: "<project-id>"
+                definition: "<definition>"
                 buildVersionToDownload: latestFromBranch
                 branchName: refs/heads/${{ parameters.AzDocsBranchName }}
-                artifactName: azdocs-src
+                artifactName: <artifact-name>
                 targetPath: $(Pipeline.Workspace)/AzDocs
             # Call the different tasks you need to be able to deploy your resources
             - task: AzureCLI@2
@@ -209,7 +136,7 @@ jobs:
                 azureSubscription: "${{ parameters.SubscriptionName }}"
                 scriptType: pscore
                 scriptPath: "$(Pipeline.Workspace)/AzDocs/Storage-Accounts/Create-Storage-account.ps1"
-                arguments: "-StorageAccountResourceGroupName '$(ResourceGroupName)' -ResourceTags $(ResourceTags) -StorageAccountName '$(StorageAccountName)' -ApplicationVnetResourceGroupName '$(ApplicationVnetResourceGroupName)' -ApplicationVnetName '$(ApplicationVnetName)' -ApplicationSubnetName '$(ApplicationSubnetName)' -LogAnalyticsWorkspaceResourceId '$(GetLogAnalyticsWorkspaceId.LogAnalyticsWorkspaceResourceId)'"
+                arguments: "-StorageAccountResourceGroupName '$(ResourceGroupName)' -ResourceTags $(ResourceTags) -StorageAccountName '$(StorageAccountName)' -LogAnalyticsWorkspaceResourceId '$(GetLogAnalyticsWorkspaceId.LogAnalyticsWorkspaceResourceId)' -ForcePublic"
             - task: AzureCLI@2
               displayName: "Create Function App"
               condition: and(succeeded(), eq(variables['DeployInfra'], 'true'))
@@ -217,7 +144,7 @@ jobs:
                 azureSubscription: "${{ parameters.SubscriptionName }}"
                 scriptType: pscore
                 scriptPath: "$(Pipeline.Workspace)/AzDocs/Functions/Create-Function-App.ps1"
-                arguments: "-AppServicePlanName '$(AppServicePlanName)' -AppServicePlanResourceGroupName '$(AppServicePlanResourceGroupName)' -FunctionAppResourceGroupName '$(FunctionAppResourceGroupName)' -FunctionAppName '$(FunctionAppName)' -FunctionAppStorageAccountName '$(FunctionAppStorageAccountName)' -LogAnalyticsWorkspaceName '$(GetLogAnalyticsWorkspaceId.LogAnalyticsWorkspaceResourceId)' -FunctionAppAlwaysOn $(FunctionAppAlwaysOn) -FUNCTIONS_EXTENSION_VERSION '$(FUNCTIONS_EXTENSION_VERSION)' -ASPNETCORE_ENVIRONMENT '$(ASPNETCORE_ENVIRONMENT)' -FunctionAppNumberOfInstances '$(FunctionAppNumberOfInstances)' -FunctionAppRuntime '$(FunctionAppRuntime)' -ResourceTags $(ResourceTags) -GatewayVnetResourceGroupName '$(GatewayVnetResourceGroupName)' -GatewayVnetName '$(GatewayVnetName)' -GatewaySubnetName '$(GatewaySubnetName)' -GatewayWhitelistRulePriority '$(GatewayWhitelistRulePriority)' -EnableFunctionAppDeploymentSlot -FunctionAppOsType '$(FunctionAppOsType)'"
+                arguments: "-AppServicePlanName '$(AppServicePlanName)' -AppServicePlanResourceGroupName '$(AppServicePlanResourceGroupName)' -FunctionAppResourceGroupName '$(FunctionAppResourceGroupName)' -FunctionAppName '$(FunctionAppName)' -FunctionAppStorageAccountName '$(FunctionAppStorageAccountName)' -LogAnalyticsWorkspaceName '$(GetLogAnalyticsWorkspaceId.LogAnalyticsWorkspaceResourceId)' -FunctionAppAlwaysOn $(FunctionAppAlwaysOn) -FUNCTIONS_EXTENSION_VERSION '$(FUNCTIONS_EXTENSION_VERSION)' -ASPNETCORE_ENVIRONMENT '$(ASPNETCORE_ENVIRONMENT)' -FunctionAppNumberOfInstances '$(FunctionAppNumberOfInstances)' -FunctionAppRuntime '$(FunctionAppRuntime)' -ResourceTags $(ResourceTags) -EnableFunctionAppDeploymentSlot -FunctionAppOsType '$(FunctionAppOsType)' -ForcePublic"
             - task: AzureCLI@2
               displayName: "Create AppInsights Resource"
               condition: and(succeeded(), eq(variables['DeployInfra'], 'true'))
@@ -234,14 +161,6 @@ jobs:
                 scriptType: pscore
                 scriptPath: "$(Pipeline.Workspace)/AzDocs/AppInsights/Create-Application-Insights-Extension-for-FunctionApps-codeless.ps1"
                 arguments: "-AppInsightsName '$(AppInsightsName)' -AppInsightsResourceGroupName '$(AppInsightsResourceGroupName)' -FunctionAppName '$(FunctionAppName)' -FunctionAppResourceGroupName '$(FunctionAppResourceGroupName)'"
-            - task: AzureCLI@2
-              displayName: "Add VNET Integration to FunctionApp"
-              condition: and(succeeded(), eq(variables['DeployInfra'], 'true'))
-              inputs:
-                azureSubscription: "${{ parameters.SubscriptionName }}"
-                scriptType: pscore
-                scriptPath: "$(Pipeline.Workspace)/AzDocs/Functions/Add-VNet-integration-to-Function-App.ps1"
-                arguments: '-FunctionAppResourceGroupName "$(FunctionAppResourceGroupName)" -FunctionAppName "$(FunctionAppName)" -VnetName "$(FunctionAppVnetIntegrationVnetName)" -FunctionAppVnetIntegrationSubnetName "$(FunctionAppVnetIntegrationSubnetName)"'
             - task: AzureCLI@2
               displayName: "Set AppSettings For Function App"
               condition: and(succeeded(), eq(variables['DeployInfra'], 'true'))
@@ -290,24 +209,3 @@ jobs:
                 scriptType: pscore
                 scriptPath: "$(Pipeline.Workspace)/AzDocs/Functions/Remove-Network-Whitelist-from-Function-App.ps1"
                 arguments: "-FunctionAppResourceGroupName '$(FunctionAppResourceGroupName)' -FunctionAppName '$(FunctionAppName)' -ApplyToAllSlots $(ApplyToAllSlots)"
-            - task: DownloadSecureFile@1
-              name: wildcardpersonalcloud
-              displayName: "Download wildcard certificate from secure files"
-              inputs:
-                secureFile: ${{ parameters.GatewayCertificate }}
-                retryCount: "5"
-            - task: AzureCLI@2
-              displayName: "Create ApplicationGateway Entrypoint for DomainName"
-              inputs:
-                azureSubscription: "${{ parameters.SubscriptionName }}"
-                scriptType: pscore
-                scriptPath: "$(Pipeline.Workspace)/AzDocs/Application-Gateway/Create-Application-Gateway-Entrypoint-for-DomainName.ps1"
-                arguments: '-CertificatePath "$(wildcardpersonalcloud.secureFilePath)" -DomainName "$(DomainName)" -Gatewayname "$(GatewayName)" -gatewayType "$(GatewayType)" -sharedServicesKeyvaultName "$(SharedServicesKeyvaultName)" -CertificatePassword "$(WildcardPersonalcloudKpnComCertificatePassword)" -backendDomainName "$(BackendDomainName)" -healthProbePath "$(HealthProbePath)" -gatewayruletype "$(GatewayRuleType)" -healthProbeInterval "$(HealthProbeInterval)" -healthProbeThreshold "$(HealthProbeThreshold)" -healthProbeTimeout "$(HealthProbeTimeout)" -healthProbeProtocol "$(HealthProbeProtocol)" -httpsSettingsProtocol "$(HttpsSettingsProtocol)" -httpsSettingsPort "$(HttpsSettingsPort)" -httpsSettingsCookieAffinity "$(HttpsSettingsCookieAffinity)" -httpsSettingsConnectionDrainingTimeout "$(HttpsSettingsConnectionDrainingTimeout)" -httpsSettingsTimeout "$(HttpsSettingsTimeout)" -matchStatusCodes "$(MatchStatusCodes)" -ApplicationGatewayResourceGroupName "$(SharedServicesResourceGroupName)" -CertificateKeyvaultResourceGroupName "$(SharedServicesResourceGroupName)"'
-            - task: AzurePowerShell@5
-              inputs:
-                azureSubscription: "${{ parameters.SubscriptionName }}"
-                ScriptType: "FilePath"
-                scriptPath: "$(Pipeline.Workspace)/AzDocs/Application-Gateway/Set-ApplicationGatewayFirewallWhitelistRule.ps1"
-                azurePowerShellVersion: "LatestVersion"
-                pwsh: true
-                ScriptArguments: "-IngressDomainName '$(DomainName)' -ApplicationGatewayResourceGroupName '$(SharedServicesResourceGroupName)' -ApplicationGatewayWafName '$(ApplicationGatewayWafName)' -ApplicationGatewayWafCustomRuleAction '$(ApplicationGatewayWafCustomRuleAction)' -ApplicationGatewayWafCustomRuleRequestHeader '$(ApplicationGatewayWafCustomRuleRequestHeader)' -ApplicationGatewayWafCustomRuleRequestHeaderValue '$(ApplicationGatewayWafCustomRuleRequestHeaderValue)'"

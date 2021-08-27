@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzDocs.CheckCompanySpecificPR", "AzDocs.CheckCompanySpecificPR\AzDocs.CheckCompanySpecificPR.csproj", "{897898D2-2CF2-4D9D-9A67-AB23A74E9BAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzDocs.CheckCompanySpecificPR.Tests", "AzDocs.CheckCompanySpecificPR.Tests\AzDocs.CheckCompanySpecificPR.Tests.csproj", "{DF985673-6AC4-4913-81BA-F9AF3B3C8C18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzDocs.CheckCompanySpecificPR.Tests", "AzDocs.CheckCompanySpecificPR.Tests\AzDocs.CheckCompanySpecificPR.Tests.csproj", "{DF985673-6AC4-4913-81BA-F9AF3B3C8C18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

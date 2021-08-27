@@ -15,12 +15,6 @@ using Newtonsoft.Json;
 
 namespace AzDocs.CheckCompanySpecificPR
 {
-    // todo: create deployments
-    // Todo: write documentation 
-    // Set up several webhooks (one for creation, one for update) 
-    // add status policy to branch policies for branch
-    // local.settings configuratie
-
     public class CheckCompanySpecificPr
     {
         private readonly IGitHubClientService _githubClientService;
@@ -50,7 +44,12 @@ namespace AzDocs.CheckCompanySpecificPR
                     return req.CreateResponse(HttpStatusCode.BadRequest);
                 }
 
+                var message = await req.Content.ReadAsStringAsync();
+                logger.Log(LogLevel.Information, message);
+
                 pr = JsonConvert.DeserializeObject<PullRequestInformation>(await req.Content.ReadAsStringAsync());
+
+                logger.Log(LogLevel.Information, $"{pr.Resource.PullRequestId}, {pr.Resource.Repository.Id}, {pr.Resource.Repository.Project}, {pr.Resource.SourceRefName}");
 
                 if (!_companySpecificTerms.Any())
                 {
@@ -110,7 +109,7 @@ namespace AzDocs.CheckCompanySpecificPR
             if (found)
             {
                 // found terms, setting status to failed
-                await _githubClientService.SetStatusOfPrAsync(pr, GitStatusState.Failed, $"Failed because one or multiple company specific terms were used. Check the comments for the specific file.");
+                await _githubClientService.SetStatusOfPrAsync(pr, GitStatusState.Failed, "Failed because one or multiple company specific terms were used. Check the comments for the specific file.");
                 return;
             }
 

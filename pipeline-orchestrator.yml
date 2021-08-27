@@ -1,4 +1,9 @@
 # Template example for the pipeline-orchestrator
+parameters:
+  - name: AzDocsBranchName
+    type: string
+    default: master
+
 name: $(date:yyyy.MM.dd)$(rev:.r)-$(Build.SourceBranchName)
 trigger:
   branches:
@@ -13,8 +18,31 @@ trigger:
 # it is important to pick a specific version so that you have the possibility to run a version with the exact same version agent.
 pool:
   vmImage: "ubuntu-20.04"
-  
+
 variables:
+  # Basic
+  - name: TeamName
+    value: $(TeamNameToUse)
+  - name: ProjectName
+    value: $(ProjectNameToUse)
+
+  # Tags
+  - name: Tag.ApplicationId
+    value: $(ApplicationId)
+  - name: Tag.ApplicationName
+    value: $(ApplicationName)
+  - name: Tag.ApplicationOwner
+    value: $(ApplicationOwner)
+  - name: Tag.AppTechOwner
+    value: $(AppTechOwner)
+  - name: Tag.BillingIdentifier
+    value: $(BillingIdentifier)
+  - name: Tag.BusinessUnit
+    value: $(BusinessUnit)
+  - name: Tag.CostType
+    value: $(CostType)
+  - name: Tag.Tier
+    value: $(Tier)
 
   # Stage Pool
   - name: Stage.Pool
@@ -27,3 +55,42 @@ stages:
         displayName: "Build"
         steps:
           - template: pipeline-build.yml
+  - stage: "dev"
+    displayName: "Deploy to dev"
+    pool:
+      vmImage: $(Stage.Pool)
+    jobs:
+      - template: pipeline-release.yml
+        parameters:
+          SubscriptionName: "KPN SP DCLOUD DEV"
+          EnvironmentName: dev
+          TeamName: $(TeamName)
+          ProjectName: $(ProjectName)
+          GatewayCertificate: "wildcard_dev_personalcloud_kpn_com.pfx"
+          AzDocsBranchName: ${{ parameters.AzDocsBranchName }}
+  - stage: "acc"
+    displayName: "Deploy to acc"
+    pool:
+      vmImage: $(Stage.Pool)
+    jobs:
+      - template: pipeline-release.yml
+        parameters:
+          SubscriptionName: "KPN SP DCLOUD ACC"
+          EnvironmentName: acc
+          TeamName: $(TeamName)
+          ProjectName: $(ProjectName)
+          GatewayCertificate: "wildcard_acc_personalcloud_kpn_com.pfx"
+          AzDocsBranchName: ${{ parameters.AzDocsBranchName }}
+  - stage: "prod"
+    displayName: "Deploy to prod"
+    pool:
+      vmImage: $(Stage.Pool)
+    jobs:
+      - template: pipeline-release.yml
+        parameters:
+          SubscriptionName: "KPN SP DCLOUD PROD"
+          EnvironmentName: prod
+          TeamName: $(TeamName)
+          ProjectName: $(ProjectName)
+          GatewayCertificate: "wildcard_personalcloud_kpn_com.pfx"
+          AzDocsBranchName: ${{ parameters.AzDocsBranchName }}

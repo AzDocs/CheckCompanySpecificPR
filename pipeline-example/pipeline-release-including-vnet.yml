@@ -47,25 +47,25 @@ jobs:
 
       # Vnet/Subnet
       - name: ApplicationSubnetName
-        value: "app-subnet-5"
+        value: "<your-subnet>"
       - name: ApplicationVnetName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-001-vnet"
+        value: "<your-vnet>"
       - name: ApplicationVnetResourceGroupName
-        value: "sharedservices-rg"
+        value: "<your-resourcegroup>"
 
       # Storage
       - name: StorageAccountName
-        value: "strgpr${{ parameters.EnvironmentName }}"
+        value: "<your-storage-account-name>"
 
       # Function app
       - name: AppServicePlanName
-        value: "${{ format('KPCShared-ASP-{0}-Linux-1', parameters.EnvironmentName) }}"
+        value: "<your-app-service-plan>"
       - name: AppServicePlanResourceGroupName
-        value: "${{ format('KPCShared-AppServicePlans-{0}-Linux', parameters.EnvironmentName) }}"
+        value: "<your-app-service-plan-resource-group-name>"
       - name: FunctionAppResourceGroupName
         value: "$(ResourceGroupName)"
       - name: FunctionAppName
-        value: "${{ format('{0}-fctapp-{1}', parameters.ProjectName, parameters.EnvironmentName) }}"
+        value: "${{ format('{0}-fctapp', parameters.ProjectName) }}"
       - name: FunctionAppStorageAccountName
         value: "$(StorageAccountName)"
       - name: AlwaysOn
@@ -79,11 +79,11 @@ jobs:
       - name: FunctionAppDeploymentSlotName
         value: "staging"
       - name: GatewayVnetResourceGroupName
-        value: "sharedservices-rg"
+        value: "<your-gateway-vnet-resource-group-name>"
       - name: GatewayVnetName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-001-vnet"
+        value: "<your-gateway-vnet-name>"
       - name: GatewaySubnetName
-        value: "gateway2-subnet"
+        value: "<your-gateway-subnet-name>"
       - name: GatewayWhitelistRulePriority
         value: "20"
       - name: FunctionAppAlwaysOn
@@ -105,26 +105,23 @@ jobs:
 
       # VNET Integration
       - name: FunctionAppVnetIntegrationSubnetName
-        value: "app-subnet-5"
+        value: "<your-function-app-vnet-integration-subnet-name>"
       - name: FunctionAppVnetIntegrationVnetName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-001-vnet"
+        value: "<your-functionapp-vnet-integration-vnet-name>"
 
         #AppSettings
       - name: FunctionAppAppSettings
-        value: "@('PAT=$(PAT)';'Organization=$(Organization)';'CompanySpecificTerms__0=KPN';'CompanySpecificTerms__1=KSP';'CompanySpecificTerms__2=Curiosity';'AcceptedTerms__0=LogAnalyticsWorkspaceId';'AcceptedTerms__1=LogAnalyticsWorkspace';'AcceptedTerms__2=Workspace';'AcceptedTerms__3=loganalyticsworkspaceresourceid';'AcceptedTerms__4=loganalyticsworkspacename';'AcceptedTerms__5=workspaces')"
+        value: "@('PAT=$(PAT)';'Organization=$(Organization)';'CompanySpecificTerms__0=ThisIsMyCompany';'CompanySpecificTerms__1=CompanyNameTest';'AcceptedTerms__0=Project';)"
 
         # Application gateway
       - name: DomainName
-        ${{ if eq(parameters.EnvironmentName, 'prod') }}:
-          value: prchecker.personalcloud.kpn.com
-        ${{ if ne(parameters.EnvironmentName, 'prod') }}:
-          value: prchecker.${{ parameters.EnvironmentName }}.personalcloud.kpn.com
+        value: <your-domain-name>
       - name: GatewayName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-002-gtw"
+        value: "<your-gateway-name>"
       - name: GatewayType
         value: "Public"
       - name: SharedServicesKeyvaultName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-shared-01-kv"
+        value: "<your-keyvault-name>"
       - name: BackendDomainName
         value: $(FunctionAppName).azurewebsites.net
       - name: HealthProbePath
@@ -152,23 +149,23 @@ jobs:
       - name: MatchStatusCodes
         value: "200-399"
       - name: SharedServicesResourceGroupName
-        value: "sharedservices-rg"
+        value: "<your-shared-services-resource-group-name>"
 
       # Log Analytics Workspace
       - name: LogAnalyticsWorkspaceResourceGroupName
-        value: "kpcshared-monitoring-${{ parameters.EnvironmentName }}"
+        value: "<your-log-analytics-workspace-resource-group-name>"
       - name: LogAnalyticsWorkspaceName
-        value: "kpcshared-law-${{ parameters.EnvironmentName }}"
+        value: "<your-log-analytics-workspace-name>"
 
       # Application Gateway WAF custom rule
       - name: ApplicationGatewayWafName
-        value: "sp-dc-${{ parameters.EnvironmentName }}-002-waf"
+        value: "<your-application-gateway-waf-name>"
       - name: ApplicationGatewayWafCustomRuleAction
         value: "Allow"
       - name: ApplicationGatewayWafCustomRuleRequestHeader
-        value: "prchecker"
+        value: "<your-request-header>"
       - name: ApplicationGatewayWafCustomRuleRequestHeaderValue
-        value: "thisistheprchecker2021"
+        value: "<your-request-header-value>"
 
     strategy:
       runOnce:
@@ -182,8 +179,8 @@ jobs:
                 definition: "853"
                 buildVersionToDownload: latestFromBranch
                 branchName: refs/heads/${{ parameters.AzDocsBranchName }}
-                artifactName: azdocs-src
-                targetPath: $(Pipeline.Workspace)/AzDocs
+                artifactName: <artifact-name>
+                targetPath: <target-path>
             # Call the different tasks you need to be able to deploy your resources
             - task: AzureCLI@2
               displayName: "Get Log Analytics Workspace Id"
@@ -291,7 +288,7 @@ jobs:
                 scriptPath: "$(Pipeline.Workspace)/AzDocs/Functions/Remove-Network-Whitelist-from-Function-App.ps1"
                 arguments: "-FunctionAppResourceGroupName '$(FunctionAppResourceGroupName)' -FunctionAppName '$(FunctionAppName)' -ApplyToAllSlots $(ApplyToAllSlots)"
             - task: DownloadSecureFile@1
-              name: wildcardpersonalcloud
+              name: wildcard
               displayName: "Download wildcard certificate from secure files"
               inputs:
                 secureFile: ${{ parameters.GatewayCertificate }}
@@ -302,7 +299,7 @@ jobs:
                 azureSubscription: "${{ parameters.SubscriptionName }}"
                 scriptType: pscore
                 scriptPath: "$(Pipeline.Workspace)/AzDocs/Application-Gateway/Create-Application-Gateway-Entrypoint-for-DomainName.ps1"
-                arguments: '-CertificatePath "$(wildcardpersonalcloud.secureFilePath)" -DomainName "$(DomainName)" -Gatewayname "$(GatewayName)" -gatewayType "$(GatewayType)" -sharedServicesKeyvaultName "$(SharedServicesKeyvaultName)" -CertificatePassword "$(WildcardPersonalcloudKpnComCertificatePassword)" -backendDomainName "$(BackendDomainName)" -healthProbePath "$(HealthProbePath)" -gatewayruletype "$(GatewayRuleType)" -healthProbeInterval "$(HealthProbeInterval)" -healthProbeThreshold "$(HealthProbeThreshold)" -healthProbeTimeout "$(HealthProbeTimeout)" -healthProbeProtocol "$(HealthProbeProtocol)" -httpsSettingsProtocol "$(HttpsSettingsProtocol)" -httpsSettingsPort "$(HttpsSettingsPort)" -httpsSettingsCookieAffinity "$(HttpsSettingsCookieAffinity)" -httpsSettingsConnectionDrainingTimeout "$(HttpsSettingsConnectionDrainingTimeout)" -httpsSettingsTimeout "$(HttpsSettingsTimeout)" -matchStatusCodes "$(MatchStatusCodes)" -ApplicationGatewayResourceGroupName "$(SharedServicesResourceGroupName)" -CertificateKeyvaultResourceGroupName "$(SharedServicesResourceGroupName)"'
+                arguments: '-CertificatePath "$(wildcard.secureFilePath)" -DomainName "$(DomainName)" -Gatewayname "$(GatewayName)" -gatewayType "$(GatewayType)" -sharedServicesKeyvaultName "$(SharedServicesKeyvaultName)" -CertificatePassword "$(CertificatePassword)" -backendDomainName "$(BackendDomainName)" -healthProbePath "$(HealthProbePath)" -gatewayruletype "$(GatewayRuleType)" -healthProbeInterval "$(HealthProbeInterval)" -healthProbeThreshold "$(HealthProbeThreshold)" -healthProbeTimeout "$(HealthProbeTimeout)" -healthProbeProtocol "$(HealthProbeProtocol)" -httpsSettingsProtocol "$(HttpsSettingsProtocol)" -httpsSettingsPort "$(HttpsSettingsPort)" -httpsSettingsCookieAffinity "$(HttpsSettingsCookieAffinity)" -httpsSettingsConnectionDrainingTimeout "$(HttpsSettingsConnectionDrainingTimeout)" -httpsSettingsTimeout "$(HttpsSettingsTimeout)" -matchStatusCodes "$(MatchStatusCodes)" -ApplicationGatewayResourceGroupName "$(SharedServicesResourceGroupName)" -CertificateKeyvaultResourceGroupName "$(SharedServicesResourceGroupName)"'
             - task: AzurePowerShell@5
               inputs:
                 azureSubscription: "${{ parameters.SubscriptionName }}"
