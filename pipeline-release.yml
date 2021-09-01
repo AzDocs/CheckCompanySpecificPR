@@ -112,27 +112,27 @@ jobs:
         #AppSettings
       - name: FunctionAppAppSettings
         value: >- 
-        @(
-          'PAT=$(PAT)';
-          'Organization=$(Organization)';
-          'CompanySpecificTerms__0=KPN';
-          'CompanySpecificTerms__1=KSP';
-          'CompanySpecificTerms__2=Curiosity';
-          'AcceptedTerms__0=LogAnalyticsWorkspaceId';
-          'AcceptedTerms__1=LogAnalyticsWorkspace';
-          'AcceptedTerms__2=Workspace';
-          'AcceptedTerms__3=loganalyticsworkspaceresourceid';
-          'AcceptedTerms__4=loganalyticsworkspacename';
-          'AcceptedTerms__5=workspaces';
-          'AcceptedTerms__6=GetLogAnalyticsWorkspaceResourceIdforPipeline';
-          'AcceptedTerms__7=loganalyticsworkspacekey';
-          'AcceptedTerms__8=getloganalyticsworkspacekeyforpipeline';
-          'AcceptedTerms__9=getloganalyticsworkspaceidforpipeline';
-          'AcceptedTerms__10=getloganalyticsworkspaceresourceidforpipeline';
-          'AcceptedTerms__11=loganalyticsworkspaceresourcegroupname';
-          'AcceptedTerms__12=loganalyticsworkspaceretentionindays';
-          'AcceptedTerms__13=loganalyticsworkspacesolutiontypes';
-          )
+          @(
+            'PAT=$(PAT)';
+            'Organization=$(Organization)';
+            'CompanySpecificTerms__0=KPN';
+            'CompanySpecificTerms__1=KSP';
+            'CompanySpecificTerms__2=Curiosity';
+            'AcceptedTerms__0=LogAnalyticsWorkspaceId';
+            'AcceptedTerms__1=LogAnalyticsWorkspace';
+            'AcceptedTerms__2=Workspace';
+            'AcceptedTerms__3=loganalyticsworkspaceresourceid';
+            'AcceptedTerms__4=loganalyticsworkspacename';
+            'AcceptedTerms__5=workspaces';
+            'AcceptedTerms__6=GetLogAnalyticsWorkspaceResourceIdforPipeline';
+            'AcceptedTerms__7=loganalyticsworkspacekey';
+            'AcceptedTerms__8=getloganalyticsworkspacekeyforpipeline';
+            'AcceptedTerms__9=getloganalyticsworkspaceidforpipeline';
+            'AcceptedTerms__10=getloganalyticsworkspaceresourceidforpipeline';
+            'AcceptedTerms__11=loganalyticsworkspaceresourcegroupname';
+            'AcceptedTerms__12=loganalyticsworkspaceretentionindays';
+            'AcceptedTerms__13=loganalyticsworkspacesolutiontypes';
+            )
 
         # Application gateway
       - name: DomainName
