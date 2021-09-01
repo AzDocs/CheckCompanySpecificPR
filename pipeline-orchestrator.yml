@@ -43,6 +43,8 @@ variables:
     value: $(CostType)
   - name: Tag.Tier
     value: $(Tier)
+  - name: Tag.TeamName
+    value: $(TeamName)
 
   # Stage Pool
   - name: Stage.Pool
