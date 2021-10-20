@@ -119,6 +119,7 @@ jobs:
             'CompanySpecificTerms__1=KSP';
             'CompanySpecificTerms__2=Curiosity';
             'CompanySpecificTerms__3=KPCShared';
+            'CompanySpecificTerms__4=wildcardpersonalcloud';
             'AcceptedTerms__0=LogAnalyticsWorkspaceId';
             'AcceptedTerms__1=LogAnalyticsWorkspace';
             'AcceptedTerms__2=Workspace';
