@@ -135,6 +135,7 @@ jobs:
             'AcceptedTerms__12=loganalyticsworkspaceretentionindays';
             'AcceptedTerms__13=loganalyticsworkspacesolutiontypes';
             'AcceptedTerms__14=workspaceid';
+            'AcceptedTerms__15=diagnosticsettingsloganalyticsworkspaceresourceid';
             )
 
         # Application gateway
